@@ -35,7 +35,7 @@
 
 .schedule-item {
   display: flex;
-  padding: 20px;
+  padding: 10px;
   transition: transform 0.3s ease-in-out;
   align-items: center; 
 }
@@ -61,7 +61,7 @@
 }
 
 .schedule-item-delete {
-  padding-left: 500px;
+  padding-left: 300px;
 }
 
 .arrow {
