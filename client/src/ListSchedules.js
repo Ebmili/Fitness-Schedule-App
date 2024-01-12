@@ -1,15 +1,17 @@
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './ListSchedules.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import InputSchedule from './InputSchedule';
 
 const formatTimeString = (timeString) => {
   const options = { hour: '2-digit', minute: '2-digit' };
   return new Date(`1970-01-01T${timeString}Z`).toLocaleTimeString('pl-PL', options);
 };
+
 
 const formatDateString = (date) => {
   const options = { weekday: 'long', day: 'numeric', month: 'numeric' };
@@ -35,6 +37,10 @@ const fetchAndSetSchedules = async (setSchedules, setSelectedDate) => {
   }
 };
 
+const handleScheduleAdded = (newSchedule) => {
+  console.log('Schedule added:', newSchedule);
+};
+
 const generateDateOptions = (selectedDate) => {
   const nextThreeDays = [];
   for (let i = -3; i < 4; i++) {
@@ -49,10 +55,8 @@ const calculateDuration = (start, end) => {
   const startTime = new Date(`1970-01-01T${start}Z`);
   const endTime = new Date(`1970-01-01T${end}Z`);
 
-  // Calculate the duration in minutes
   const durationMinutes = (endTime - startTime) / (1000 * 60);
 
-  // Convert minutes to hours and minutes
   const hours = Math.floor(durationMinutes / 60);
   const minutes = durationMinutes % 60;
 
@@ -64,6 +68,12 @@ const ListSchedules = () => {
   const [schedules, setSchedules] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [dateOptions, setDateOptions] = useState([]);
+  const [selectedClassType, setSelectedClassType] = useState('');
+
+  useEffect(() => {
+    console.log('Selected Class Type:', selectedClassType);
+    fetchAndSetSchedules(setSchedules, setSelectedDate);
+  }, [selectedClassType]);
 
   useEffect(() => {
     fetchAndSetSchedules(setSchedules, setSelectedDate);
@@ -72,6 +82,10 @@ const ListSchedules = () => {
   useEffect(() => {
     setDateOptions(generateDateOptions(selectedDate));
   }, [selectedDate]);
+
+  const handleClassTypeChange = (value) => {
+    setSelectedClassType(value);
+  };
 
   const handleDateClick = (date) => {
     setSelectedDate(date);
@@ -150,7 +164,8 @@ const ListSchedules = () => {
           .filter(
             (schedule) =>
               new Date(schedule.schedule_date).toLocaleDateString() ===
-              selectedDate.toLocaleDateString()
+                selectedDate.toLocaleDateString() &&
+              (!selectedClassType || schedule.classtypes === selectedClassType)
           )
           .map((schedule) => (
             <div key={schedule.schedule_id} className="schedule-item">
@@ -162,6 +177,7 @@ const ListSchedules = () => {
               <div className="border-right"></div>
               <div className="schedule-item-details">
                 <p>Description: {schedule.description}</p>
+                <p>Class Type: {schedule.classtypes}</p>
               </div>
               <div className="schedule-item-delete">
                 <FontAwesomeIcon
@@ -172,6 +188,17 @@ const ListSchedules = () => {
             </div>
           ))}
       </div>
+      {selectedClassType && (
+  <div>
+    <h2>Selected Class Type: {selectedClassType}</h2>
+    <InputSchedule
+      onScheduleAdded={handleScheduleAdded}
+      selectedClassType={selectedClassType}
+
+    />
+  </div>
+)}
+      
     </div>
   );
 };
