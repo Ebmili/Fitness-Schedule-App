@@ -68,7 +68,7 @@ const ListSchedules = () => {
   const [schedules, setSchedules] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [dateOptions, setDateOptions] = useState([]);
-  const [selectedClassType, setSelectedClassType] = useState('');
+  const [selectedClassType] = useState('');
 
   useEffect(() => {
     console.log('Selected Class Type:', selectedClassType);
@@ -82,10 +82,6 @@ const ListSchedules = () => {
   useEffect(() => {
     setDateOptions(generateDateOptions(selectedDate));
   }, [selectedDate]);
-
-  const handleClassTypeChange = (value) => {
-    setSelectedClassType(value);
-  };
 
   const handleDateClick = (date) => {
     setSelectedDate(date);
@@ -189,15 +185,14 @@ const ListSchedules = () => {
           ))}
       </div>
       {selectedClassType && (
-  <div>
-    <h2>Selected Class Type: {selectedClassType}</h2>
-    <InputSchedule
-      onScheduleAdded={handleScheduleAdded}
-      selectedClassType={selectedClassType}
-
-    />
-  </div>
-)}
+        <div>
+          <h2>Selected Class Type: {selectedClassType}</h2>
+          <InputSchedule
+            onScheduleAdded={handleScheduleAdded}
+            selectedClassType={selectedClassType}
+          />
+        </div>
+      )}
       
     </div>
   );
